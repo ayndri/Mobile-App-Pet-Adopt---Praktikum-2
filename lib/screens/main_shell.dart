@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'halaman_menu_kategori.dart';
+import 'dog_home_page.dart';
 import 'favorit_page.dart';
 import 'riwayat_page.dart';
 import 'profil_page.dart';
@@ -15,7 +15,7 @@ class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
 
   static const List<Widget> _pages = [
-    HalamanMenuKategori(),
+    DogHomePage(),
     FavoritPage(),
     RiwayatPage(),
     ProfilPage(),

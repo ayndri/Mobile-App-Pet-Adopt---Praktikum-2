@@ -119,8 +119,7 @@ class HalamanMenuKategori extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              PageListPets(kategori: item['title']),
+                          builder: (_) => PageListPets(kategori: item['title']),
                         ),
                       );
                     },

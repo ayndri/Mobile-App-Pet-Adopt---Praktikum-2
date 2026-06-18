@@ -1,9 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'home_screen.dart';
+import '../data/user_storage.dart';
+import 'daftar_page.dart';
 
-class ProfilPage extends StatelessWidget {
+class ProfilPage extends StatefulWidget {
   const ProfilPage({Key? key}) : super(key: key);
+
+  @override
+  State<ProfilPage> createState() => _ProfilPageState();
+}
+
+class _ProfilPageState extends State<ProfilPage> {
+  String _nama = '';
+  String _nbi = '';
+  String _email = '';
+  String _alamat = '';
+  String _instagram = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _muatData();
+  }
+
+  Future<void> _muatData() async {
+    final data = await UserStorage.ambil();
+    if (!mounted) return;
+    setState(() {
+      _nama = data['nama'] ?? '';
+      _nbi = data['nbi'] ?? '';
+      _email = data['email'] ?? '';
+      _alamat = data['alamat'] ?? '';
+      _instagram = (data['instagram'] ?? '').replaceFirst('@', '');
+    });
+  }
+
+  String _orDash(String v) => v.isEmpty ? '-' : v;
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +108,9 @@ class ProfilPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 14),
-              const Text(
-                'Dewi Nur Ayundari',
-                style: TextStyle(
+              Text(
+                _orDash(_nama),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -132,29 +164,29 @@ class ProfilPage extends StatelessWidget {
             _infoField(
               icon: Icons.person_outline,
               label: 'Nama Lengkap',
-              value: 'Dewi Nur Ayundari',
+              value: _orDash(_nama),
             ),
             const Divider(height: 1, indent: 56),
             _infoField(
               icon: Icons.badge_outlined,
               label: 'NBI',
-              value: '1462300065',
+              value: _orDash(_nbi),
             ),
             const Divider(height: 1, indent: 56),
             _infoField(
               icon: Icons.email_outlined,
               label: 'Email',
-              value: 'dewinurayundari@email.com',
+              value: _orDash(_email),
             ),
             const Divider(height: 1, indent: 56),
             _infoField(
               icon: Icons.location_on_outlined,
               label: 'Alamat',
-              value: 'Surabaya, Jawa Timur',
+              value: _orDash(_alamat),
             ),
             const Divider(height: 1, indent: 56),
             _instagramField(
-              username: 'dewinur.aa',
+              username: _instagram,
               isLast: true,
             ),
           ],
@@ -209,13 +241,16 @@ class ProfilPage extends StatelessWidget {
   }
 
   Widget _instagramField({required String username, bool isLast = false}) {
+    final tampil = username.isEmpty ? '-' : '@$username';
     return InkWell(
-      onTap: () async {
-        final url = Uri.parse('https://instagram.com/$username');
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
-        }
-      },
+      onTap: username.isEmpty
+          ? null
+          : () async {
+              final url = Uri.parse('https://instagram.com/$username');
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            },
       child: Padding(
         padding: EdgeInsets.fromLTRB(16, 14, 16, isLast ? 16 : 14),
         child: Row(
@@ -242,12 +277,11 @@ class ProfilPage extends StatelessWidget {
                 children: [
                   Text(
                     'Instagram',
-                    style:
-                        TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    '@$username',
+                    tampil,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -328,11 +362,13 @@ class ProfilPage extends StatelessWidget {
             child: const Text('Batal', style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
+              await UserStorage.hapus();
+              if (!context.mounted) return;
               Navigator.pop(context);
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
+                MaterialPageRoute(builder: (_) => const DaftarPage()),
                 (route) => false,
               );
             },
@@ -341,8 +377,7 @@ class ProfilPage extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
             ),
-            child:
-                const Text('Keluar', style: TextStyle(color: Colors.white)),
+            child: const Text('Keluar', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

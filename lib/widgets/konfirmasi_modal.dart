@@ -53,8 +53,7 @@ class KonfirmasiModal extends StatelessWidget {
                 helpText: 'Pilih Tanggal Kunjungan',
               );
               if (picked != null) {
-                final tgl =
-                    '${picked.day}/${picked.month}/${picked.year}';
+                final tgl = '${picked.day}/${picked.month}/${picked.year}';
                 ScaffoldMessenger.of(pageContext).showSnackBar(
                   SnackBar(
                     content: Text(
